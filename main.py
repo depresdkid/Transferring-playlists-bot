@@ -1,6 +1,12 @@
+
 import requests
 
 from config import *
+
+#TODO хочу так же сделать тут проверку, что можно было кидать свой id без ссылки, т.к. его легко получить и в будующем валидацию что гворить пользовотелю что он даун не то кидает
+def GetUserFromLink(link):
+    return link.rpartition('/')[2].rpartition('?')[0]
+
 
 AUTH_URL = 'https://accounts.spotify.com/api/token'
 
@@ -19,7 +25,11 @@ access_token = auth_response_data['access_token']
 
 headers = {"Authorization": "Bearer "+access_token, "Content-Type": "application/json"}
 
-response = requests.get('https://api.spotify.com/v1/users/50qupbexxdzchoh6t75udtdha', headers=headers)
-print(response.text)
+link = "https://open.spotify.com/user/3u6opos9nb775ufzdkgtk1kz7?si=0cd733ce8a764b45"
+response = requests.get('https://api.spotify.com/v1/users/{userId}/playlists/'.format(userId = GetUserFromLink(link)), headers=headers)
+
+for item in response.json()['items']:
+    print(item['name']);
+
 
 #TODO ПОИСК ПЛЕЛИСТОВ ПО ПРОФИЛЮ
