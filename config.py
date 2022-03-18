@@ -1,4 +1,2 @@
-from tokenize import Token
-
 SPOTIFY_TOKEN = '26f3859bf44544cd8ac90d908aa0451b'
 SPOTIFY_ID = '730da4672ff6456f8103872c9b181591'
