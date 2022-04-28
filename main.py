@@ -7,7 +7,9 @@ from api import Api
 
 api = Api()
 
-a = api.getUserPlaylists(users.users[0])
-b = api.getTracksFromPlaylist(a[0])
-
-print("a")
+for user in users.users:
+    playlists = api.getUserPlaylists(user)
+    userName = api.getUser(user)
+    for pl in playlists:
+        api.fillPlaylistWithTracks(pl)
+        api.writeTracksInFile(userName, pl)

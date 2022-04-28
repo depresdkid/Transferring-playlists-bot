@@ -39,19 +39,27 @@ class Api(object):
         # return the access token
         return auth_response_data['access_token']
 
+    def getUser(self, user):
+        response = requests.get('https://api.spotify.com/v1/users/{userId}'.format(
+            userId=util.getUserIdFromLink(user)),
+            headers=self.headers)
+        name = response.json()["display_name"]
+        return name
+
     def getUserPlaylists(self, user):
 
         playlist = []
         response = requests.get('https://api.spotify.com/v1/users/{userId}/playlists/'.format(
-            userId=util.getUserFromLink(user)),
+            userId=util.getUserIdFromLink(user)),
             headers=self.headers)
 
         for item in response.json()['items']:
             pl = Playlist(id=item["id"], name=item["name"], tracks_total=item["tracks"]["total"], tracks=[])
             playlist.append(pl)
+
         return playlist
 
-    def getTracksFromPlaylist(self, playlist: Playlist):
+    def fillPlaylistWithTracks(self, playlist: Playlist):
 
         response = requests.get('https://api.spotify.com/v1/playlists/{plId}/tracks/'.format(
             plId=playlist.id),
@@ -63,3 +71,10 @@ class Api(object):
             playlist.tracks.append(tr)
 
         return playlist
+
+    @staticmethod
+    def writeTracksInFile(username, playlist: Playlist):
+        file = open(username + "_" + playlist.name + ".txt", "w", encoding="utf-8")
+        for track in playlist.tracks:
+            file.write(track.artist + " - " + track.name+"\n")
+        file.close()
