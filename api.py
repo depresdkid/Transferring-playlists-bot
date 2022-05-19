@@ -60,15 +60,17 @@ class Api(object):
         return playlist
 
     def fillPlaylistWithTracks(self, playlist: Playlist):
+        for i in range(0, playlist.tracks_total, 100):
+            response = requests.get('https://api.spotify.com/v1/playlists/{plId}/tracks?offset={offset}'.format(
+                plId=playlist.id,
+                offset=i),
+                headers=self.headers)
 
-        response = requests.get('https://api.spotify.com/v1/playlists/{plId}/tracks/'.format(
-            plId=playlist.id),
-            headers=self.headers)
-
-        for item in response.json()['items']:
-            track = item["track"]
-            tr = Track(id=track["id"], name=track["name"], artist=track["artists"][0]["name"])
-            playlist.tracks.append(tr)
+            items = response.json()['items']
+            for item in items:
+                track = item["track"]
+                tr = Track(id=track["id"], name=track["name"], artist=track["artists"][0]["name"])
+                playlist.tracks.append(tr)
 
         return playlist
 
